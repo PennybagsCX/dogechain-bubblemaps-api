@@ -11,8 +11,6 @@
 import { neon } from '@neondatabase/serverless';
 import { NextRequest, NextResponse } from 'next/server';
 
-const sql = neon(process.env.DATABASE_URL || '');
-
 interface TokenPopularityData {
   tokenAddress: string;
   searchCount: number;
@@ -32,6 +30,7 @@ interface PopularityUpdateRequest {
 // GET - Fetch popularity metrics
 export async function GET(request: NextRequest) {
   try {
+    const sql = neon(process.env.DATABASE_URL || '');
     const { searchParams } = new URL(request.url);
     const addresses = searchParams.getAll("addresses[]");
 
@@ -92,6 +91,7 @@ export async function GET(request: NextRequest) {
 // POST - Update popularity metrics
 export async function POST(request: NextRequest) {
   try {
+    const sql = neon(process.env.DATABASE_URL || '');
     const body: PopularityUpdateRequest = await request.json();
 
     if (!body.tokenAddress || typeof body.timestamp !== "number") {

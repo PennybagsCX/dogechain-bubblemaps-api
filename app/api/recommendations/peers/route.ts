@@ -10,8 +10,6 @@
 import { neon } from '@neondatabase/serverless';
 import { NextRequest, NextResponse } from 'next/server';
 
-const sql = neon(process.env.DATABASE_URL || '');
-
 interface PeerRecommendationData {
   address: string;
   name: string;
@@ -23,6 +21,7 @@ interface PeerRecommendationData {
 // GET - Peer recommendations
 export async function GET(request: NextRequest) {
   try {
+    const sql = neon(process.env.DATABASE_URL || '');
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("query");
     const type = searchParams.get("type") || "TOKEN";

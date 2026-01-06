@@ -10,8 +10,6 @@
 import { neon } from '@neondatabase/serverless';
 import { NextRequest, NextResponse } from 'next/server';
 
-const sql = neon(process.env.DATABASE_URL || '');
-
 interface SearchEventRequest {
   sessionId: string;
   query: string;
@@ -22,6 +20,7 @@ interface SearchEventRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    const sql = neon(process.env.DATABASE_URL || '');
     const body: SearchEventRequest = await request.json();
 
     // Validate required fields

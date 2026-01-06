@@ -10,8 +10,6 @@
 import { neon } from '@neondatabase/serverless';
 import { NextRequest, NextResponse } from 'next/server';
 
-const sql = neon(process.env.DATABASE_URL || '');
-
 interface ClickEventRequest {
   sessionId: string;
   query: string;
@@ -24,6 +22,7 @@ interface ClickEventRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    const sql = neon(process.env.DATABASE_URL || '');
     const body: ClickEventRequest = await request.json();
 
     // Validate required fields
