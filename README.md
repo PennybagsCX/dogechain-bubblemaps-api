@@ -1,217 +1,566 @@
-# Dogechain Bubblemaps Analytics API
+# Dogechain Bubblemaps API
 
-Analytics backend for Dogechain Bubblemaps search learning system.
+Backend API for Dogechain Bubblemaps analytics, trending, and recommendations.
 
-## Tech Stack
+**Built with:** Next.js 15 + TypeScript + Neon PostgreSQL
+**Deployed:** https://dogechain-bubblemaps-api.vercel.app
+**Framework:** App Router (Serverless API Routes)
 
+---
+
+## Overview
+
+This API provides:
+- **Analytics** - Search and click event tracking
+- **Trending** - Real-time trending assets based on search frequency
+- **Recommendations** - Collaborative filtering for token discovery
+- **Proxy** - Dogechain Explorer API proxy to avoid CORS issues
+- **Health** - System monitoring and uptime checks
+
+**Tech Stack:**
 - **Next.js 15** - API routes (serverless functions)
 - **Neon PostgreSQL** - Serverless Postgres database
-- **Vercel** - Deployment (free tier: 100K invocations/month)
+- **Vercel** - Deployment platform (free tier: 100K invocations/month)
+- **TypeScript** - Type safety and validation
+
+---
 
 ## API Endpoints
 
-### POST /api/analytics/search
-Collects search query events.
+### Analytics
 
-**Request:**
-```json
+#### POST /api/analytics/search
+Track search query events for aggregate learning and analytics.
+
+**Request Body:**
+```typescript
 {
-  "sessionId": "64-char-hex-string",
-  "query": "doge",
-  "results": ["0x123...", "0x456..."],
-  "resultCount": 2,
-  "timestamp": 1704067200000
+  sessionId: string;      // 64-character hex session ID
+  query: string;           // Search query (2-500 characters)
+  results: string[];       // Array of token addresses (max 100)
+  resultCount: number;     // Number of results
+  timestamp: number;       // Unix timestamp in milliseconds
 }
 ```
 
-### POST /api/analytics/click
-Collects result click events.
-
-**Request:**
+**Response (200 OK):**
 ```json
 {
-  "sessionId": "64-char-hex-string",
-  "query": "doge",
-  "clickedAddress": "0x123...",
-  "resultRank": 0,
-  "resultScore": 95.5,
-  "timeToClickMs": 1500,
-  "timestamp": 1704067201000
+  "success": true,
+  "saved": true
 }
 ```
 
-### GET /api/trending/popularity
-Fetches popularity metrics for tokens.
+**Use Cases:**
+- Track what users are searching for
+- Build search analytics and insights
+- Improve search relevance over time
 
-**Query Params:**
-- `addresses[]` - Array of token addresses (max 100)
+---
 
-**Response:**
+#### POST /api/analytics/click
+Track click events on search results for popularity scoring.
+
+**Request Body:**
+```typescript
+{
+  sessionId: string;        // 64-character hex session ID
+  query: string;             // Original search query
+  clickedAddress: string;    // Token address that was clicked
+  resultRank: number;        // Position in results (0-indexed)
+  resultScore: number;       // Relevance score
+  timeToClickMs: number;     // Time from search to click (ms)
+  timestamp: number;         // Unix timestamp in milliseconds
+}
+```
+
+**Response (200 OK):**
 ```json
 {
-  "0x123...": {
-    "tokenAddress": "0x123...",
+  "success": true,
+  "saved": true
+}
+```
+
+**Use Cases:**
+- Measure search result relevance
+- Calculate click-through rates
+- Improve ranking algorithms
+
+---
+
+### Trending
+
+#### GET /api/trending
+Get trending tokens and NFTs based on search frequency.
+
+**Query Parameters:**
+- `type` (optional): "TOKEN", "NFT", or "ALL" (default: "ALL")
+- `limit` (optional): Max results 1-100 (default: 20)
+
+**Response (200 OK):**
+```json
+{
+  "assets": [
+    {
+      "address": "0xbdaD927604c5cB78F15b3669a92Fa5A1427d33a2",
+      "symbol": "DOGE",
+      "name": "DogeCoin",
+      "type": "TOKEN",
+      "velocityScore": 95.5,
+      "totalSearches": 1500,
+      "recentSearches": 450,
+      "previousSearches": 1050,
+      "rank": 1
+    }
+  ],
+  "cached": true,
+  "stale": false,
+  "timestamp": "2026-01-06T12:00:00.000Z"
+}
+```
+
+**Use Cases:**
+- Display trending tokens on homepage
+- Show popular searches
+- Discover trending assets
+
+**Caching:** 5 minutes with stale-while-revalidate
+
+---
+
+#### POST /api/trending/log
+Log search queries for trending calculation (fire-and-forget).
+
+**Request Body:**
+```typescript
+{
+  address: string;          // Token contract address (0x...)
+  assetType: "TOKEN" | "NFT";
+  symbol?: string;          // Optional token symbol
+  name?: string;            // Optional token name
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "logged": true
+}
+```
+
+**Use Cases:**
+- Track search frequency for trending
+- Fire-and-forget logging (doesn't block UI)
+- Increment search counts on tokens
+
+**Note:** Returns success even if logging fails to prevent blocking the user interface.
+
+---
+
+#### GET /api/trending/popularity
+Get popularity metrics for multiple tokens.
+
+**Query Parameters:**
+- `addresses[]` (required): Token addresses (max 100)
+
+**Response (200 OK):**
+```json
+{
+  "0xbdaD927604c5cB78F15b3669a92Fa5A1427d33a2": {
+    "tokenAddress": "0xbdaD927604c5cB78F15b3669a92Fa5A1427d33a2",
     "searchCount": 150,
-    "clickCount": 45,
-    "ctr": 0.3,
-    "lastSearched": 1704067200000,
-    "lastClicked": 1704067201000
+    "clickCount": 75,
+    "ctr": 0.5,
+    "lastSearched": 1704556800000,
+    "lastClicked": 1704556815000
   }
 }
 ```
 
-### POST /api/trending/popularity
-Updates popularity metrics.
+**Use Cases:**
+- Batch fetch popularity metrics
+- Boost search results by popularity
+- Display click-through rates
 
-**Request:**
-```json
+---
+
+#### POST /api/trending/popularity
+Update popularity metrics for a token (increment counters).
+
+**Request Body:**
+```typescript
 {
-  "tokenAddress": "0x123...",
-  "appearedInResults": true,
-  "wasClicked": false,
-  "timestamp": 1704067200000
+  tokenAddress: string;      // Token contract address
+  appearedInResults: boolean; // Whether token appeared in search
+  wasClicked: boolean;        // Whether user clicked on token
+  timestamp: number;          // Unix timestamp in milliseconds
 }
 ```
 
-### GET /api/recommendations/peers
-Collaborative filtering recommendations.
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "updated": true
+}
+```
 
-**Query Params:**
-- `query` - Search query (min 2 chars)
-- `type` - "TOKEN" or "NFT" (default: "TOKEN")
-- `limit` - Number of recommendations (1-20, default: 5)
+**Use Cases:**
+- Increment search counters
+- Increment click counters
+- Track last interaction time
 
-**Response:**
+---
+
+### Recommendations
+
+#### GET /api/recommendations/peers
+Get collaborative filtering recommendations based on peer behavior.
+
+**Query Parameters:**
+- `query` (required): Search query (min 2 chars)
+- `type` (optional): "TOKEN" or "NFT" (default: "TOKEN")
+- `limit` (optional): Number of recommendations 1-20 (default: 5)
+
+**Response (200 OK):**
 ```json
 {
   "recommendations": [
     {
-      "address": "0x789...",
-      "name": "DogeCoin",
+      "address": "0xbdaD927604c5cB78F15b3669a92Fa5A1427d33a2",
       "symbol": "DOGE",
-      "score": 0.85,
-      "reason": "Popular with users who searched similar queries"
+      "name": "DogeCoin",
+      "type": "TOKEN",
+      "score": 0.85
     }
-  ],
-  "query": "doge",
-  "type": "TOKEN",
-  "count": 1
+  ]
 }
 ```
 
-## Local Development
+**Use Cases:**
+- Suggest related tokens
+- Collaborative filtering
+- Discover similar assets
 
-### 1. Install Dependencies
+---
+
+### Proxy
+
+#### GET /api/dogechain-proxy
+Proxy requests to Dogechain Explorer API to avoid CORS issues.
+
+**Query Parameters:**
+All query parameters are forwarded to `https://explorer.dogechain.dog/api`
+
+**Response:** Returns the exact response from Dogechain Explorer API
+
+**Use Cases:**
+- Avoid CORS issues with Dogechain Explorer API
+- Avoid SSL certificate issues on mobile browsers
+- Single source of truth for blockchain data
+
+**Caching:** 1 minute cache
+**CORS:** Configured for public access
+
+**Example:**
+```bash
+# Get token supply
+curl "https://dogechain-bubblemaps-api.vercel.app/api/dogechain-proxy?module=stats&action=tokensupply&contractaddress=0xbdaD927604c5cB78F15b3669a92Fa5A1427d33a2"
+
+# Get contract source code
+curl "https://dogechain-bubblemaps-api.vercel.app/api/dogechain-proxy?module=contract&action=getsourcecode&address=0xbdaD927604c5cB78F15b3669a92Fa5A1427d33a2"
+```
+
+---
+
+### System
+
+#### GET /api/health
+Health check endpoint for monitoring and uptime checks.
+
+**Response (200 OK):**
+```json
+{
+  "status": "healthy",
+  "database": "connected",
+  "timestamp": "2026-01-06T12:00:00.000Z"
+}
+```
+
+**Use Cases:**
+- Health monitoring
+- Uptime checks
+- Database connection verification
+
+---
+
+## Database Schema
+
+### Tables
+
+#### search_events
+Search query tracking for analytics.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | SERIAL PRIMARY KEY | Unique identifier |
+| `session_id` | VARCHAR(64) | Session identifier |
+| `query` | VARCHAR(500) | Search query text |
+| `results` | JSONB | Array of result addresses |
+| `result_count` | INTEGER | Number of results |
+| `timestamp` | TIMESTAMPTZ | Event timestamp |
+
+**Indexes:**
+- `session_id` - For session-based queries
+- `query` - For query analytics
+- `timestamp` - For time-based filtering
+
+---
+
+#### click_events
+Click event tracking for analytics.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | SERIAL PRIMARY KEY | Unique identifier |
+| `session_id` | VARCHAR(64) | Session identifier |
+| `query` | VARCHAR(500) | Original search query |
+| `clicked_address` | VARCHAR(42) | Token address clicked |
+| `result_rank` | INTEGER | Position in results |
+| `result_score` | DECIMAL | Relevance score |
+| `time_to_click_ms` | INTEGER | Time to click (ms) |
+| `timestamp` | TIMESTAMPTZ | Event timestamp |
+
+**Indexes:**
+- `session_id` - For session-based queries
+- `clicked_address` - For token-based analytics
+- `timestamp` - For time-based filtering
+
+---
+
+#### trending_searches
+Aggregated trending data (pre-computed).
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | BIGINT PRIMARY KEY | Unique identifier |
+| `address` | VARCHAR UNIQUE | Token contract address |
+| `asset_type` | VARCHAR | "TOKEN" or "NFT" |
+| `symbol` | VARCHAR(50) | Token symbol |
+| `name` | VARCHAR(255) | Token name |
+| `search_count` | INTEGER | Total search count |
+| `created_at` | TIMESTAMPTZ | First seen timestamp |
+| `updated_at` | TIMESTAMPTZ | Last updated timestamp |
+
+**Indexes:**
+- `address` - Unique constraint
+- `search_count` - For trending sorting
+- `updated_at` - For recency sorting
+- `asset_type` - For type filtering
+
+---
+
+#### token_popularity
+Popularity metrics for search ranking.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `token_address` | VARCHAR(42) PRIMARY KEY | Token contract address |
+| `search_count` | INTEGER | Total search count |
+| `click_count` | INTEGER | Total click count |
+| `ctr` | DECIMAL(5,2) | Click-through rate |
+| `last_searched` | TIMESTAMPTZ | Last search timestamp |
+| `last_clicked` | TIMESTAMPTZ | Last click timestamp |
+| `updated_at` | TIMESTAMPTZ | Last updated timestamp |
+
+**Indexes:**
+- `token_address` - Primary key
+- `search_count` - For popularity sorting
+- `ctr` - For CTR-based ranking
+
+---
+
+## Development
+
+### Prerequisites
+- Node.js 18+
+- Neon PostgreSQL database
+- npm package manager
+
+### Setup
+
+**1. Clone repository:**
+```bash
+cd "/Volumes/DEV Projects/dogechain-bubblemaps-api"
+```
+
+**2. Install dependencies:**
 ```bash
 npm install
 ```
 
-### 2. Set Environment Variables
-Copy `.env.example` to `.env.local`:
+**3. Create environment file:**
 ```bash
 cp .env.example .env.local
 ```
 
-Add your Neon `DATABASE_URL` to `.env.local`.
+**4. Edit `.env.local`:**
+```bash
+# Neon PostgreSQL database connection
+DATABASE_URL=postgresql://user:password@ep-xxx.aws.neon.tech/dbname?sslmode=require
+```
 
-### 3. Run Development Server
+**5. Run development server:**
 ```bash
 npm run dev
 ```
 
-API will be available at `http://localhost:3000/api/*`
-
-## Deployment to Vercel
-
-### Option A: Via Vercel CLI (Recommended)
-
-1. **Install Vercel CLI:**
+**6. Test API:**
 ```bash
-npm i -g vercel
+# Health check
+curl http://localhost:3000/api/health
+
+# Should return: {"status":"healthy","database":"connected"}
 ```
 
-2. **Login to Vercel:**
-```bash
-vercel login
+---
+
+### Project Structure
+
+```
+app/
+├── api/
+│   ├── analytics/
+│   │   ├── search/
+│   │   │   └── route.ts          # Search event tracking
+│   │   └── click/
+│   │       └── route.ts          # Click event tracking
+│   ├── trending/
+│   │   ├── route.ts              # Get trending assets
+│   │   ├── log/
+│   │   │   └── route.ts          # Log searches
+│   │   └── popularity/
+│   │       └── route.ts          # Popularity metrics
+│   ├── recommendations/
+│   │   └── peers/
+│   │       └── route.ts          # Peer recommendations
+│   ├── dogechain-proxy/
+│   │   └── route.ts              # Dogechain Explorer proxy
+│   └── health/
+│       └── route.ts              # Health check
+├── layout.tsx
+└── page.tsx
+
+next.config.js                     # CORS configuration
+package.json
+tsconfig.json
 ```
 
-3. **Deploy:**
-```bash
-vercel
-```
+---
 
-4. **Add Environment Variable:**
-```bash
-vercel env add DATABASE_URL
-```
-Paste your Neon connection string.
+## Deployment
 
-5. **Deploy to Production:**
-```bash
-vercel --prod
-```
-
-### Option B: Via Vercel Dashboard
-
-1. Go to https://vercel.com/new
-2. Import this GitHub repository
-3. Add `DATABASE_URL` environment variable
-4. Click "Deploy"
-
-## Environment Variables
+### Environment Variables
 
 | Variable | Description | Required |
 |----------|-------------|----------|
 | `DATABASE_URL` | Neon PostgreSQL connection string | ✅ Yes |
 
-## Database Setup
+### Deployment Process
 
-Make sure you've run the migration script in your Neon database:
+**Automatic Deployment:**
+1. Push to `main` branch
+2. GitHub Actions triggers automatically
+3. Vercel builds and deploys
+4. Tests run automatically
 
-1. Go to https://console.neon.tech
-2. Open SQL Editor
-3. Run the migration from `/server/database/neon-migration.sql` in the main project
+**Manual Deployment:**
 
-## Testing
+#### Option A: Via Vercel CLI (Recommended)
 
-### Test Search Analytics
+**1. Install Vercel CLI:**
 ```bash
-curl -X POST https://your-api.vercel.app/api/analytics/search \
+npm i -g vercel
+```
+
+**2. Login to Vercel:**
+```bash
+vercel login
+```
+
+**3. Deploy:**
+```bash
+vercel
+```
+
+**4. Add Environment Variable:**
+```bash
+vercel env add DATABASE_URL
+```
+Paste your Neon connection string.
+
+**5. Deploy to Production:**
+```bash
+vercel --prod
+```
+
+#### Option B: Via Vercel Dashboard
+
+1. Go to https://vercel.com/new
+2. Import GitHub repository: `PennybagsCX/dogechain-bubblemaps-api`
+3. Add `DATABASE_URL` environment variable in project settings
+4. Click "Deploy"
+
+**Deployment URL:** https://dogechain-bubblemaps-api.vercel.app
+
+---
+
+## Verification
+
+After deployment, verify the API is working:
+
+```bash
+# Health check
+curl https://dogechain-bubblemaps-api.vercel.app/api/health
+
+# Test trending endpoint
+curl "https://dogechain-bubblemaps-api.vercel.app/api/trending?type=TOKEN&limit=5"
+
+# Test log endpoint
+curl -X POST https://dogechain-bubblemaps-api.vercel.app/api/trending/log \
   -H "Content-Type: application/json" \
-  -d '{
-    "sessionId": "a1b2c3d4e5f6...64chars",
-    "query": "doge",
-    "results": ["0x123..."],
-    "resultCount": 1,
-    "timestamp": 1704067200000
-  }'
+  -d '{"address":"0x1234567890123456789012345678901234567890","assetType":"TOKEN","symbol":"TEST","name":"Test Token"}'
+
+# Test proxy endpoint
+curl "https://dogechain-bubblemaps-api.vercel.app/api/dogechain-proxy?module=stats&action=tokensupply&contractaddress=0xbdaD927604c5cB78F15b3669a92Fa5A1427d33a2"
 ```
 
-### Test Popularity
-```bash
-curl "https://your-api.vercel.app/api/trending/popularity?addresses[]=0x123..."
-```
+---
 
 ## Cost Estimation
 
-**Vercel Free Tier:**
+### Vercel Free Tier
 - 100K invocations/month
 - Sufficient for ~3,000 searches/day
 - $0/month
 
-**When to Upgrade:**
+### When to Upgrade
 - >100K requests/month
 - Pro tier: $20/month for 1M invocations
 
-**Neon Free Tier:**
+### Neon Free Tier
 - 0.5 GB storage
 - 300 hours compute/month
 - ~3 billion row reads/month
 - $0/month
 
-**Estimated Usage:**
+### Estimated Usage
 - 10K searches/day = 300K searches/month
 - Need Vercel Pro at high traffic
+
+---
 
 ## Monitoring
 
@@ -221,12 +570,84 @@ Check Vercel dashboard for:
 - Response time
 - Database connection health
 
+### Health Monitoring
+
+Setup external monitoring:
+```bash
+# Health check endpoint
+curl https://dogechain-bubblemaps-api.vercel.app/api/health
+```
+
+Recommended tools:
+- UptimeRobot (free)
+- Pingdom
+- StatusCake
+
+---
+
+## Troubleshooting
+
+### Database Connection Issues
+
+**Symptom:** Health check returns database error
+
+**Solution:**
+1. Verify `DATABASE_URL` is set correctly in Vercel
+2. Check Neon database is active
+3. Ensure connection string includes `?sslmode=require`
+4. Test connection with psql:
+   ```bash
+   psql $DATABASE_URL
+   ```
+
+### CORS Errors
+
+**Symptom:** Browser shows CORS policy errors
+
+**Solution:**
+1. Check `next.config.js` has correct CORS headers
+2. Ensure frontend URL is in allowed origins
+3. Verify no conflicting CORS settings
+
+### Environment Variables Not Working
+
+**Symptom:** API calls failing or wrong URLs
+
+**Solution:**
+1. Check Vercel project settings > Environment Variables
+2. Ensure variables are set for all environments (Production, Preview, Development)
+3. Redeploy after changing variables
+
+---
+
+## Documentation
+
+**Frontend Documentation:**
+- **[API Reference](../Dogechain\ Bubblemaps/docs/API_REFERENCE.md)** - Complete endpoint documentation
+- **[Deployment Guide](../Dogechain\ Bubblemaps/docs/DEPLOYMENT_GUIDE.md)** - Setup and deployment instructions
+- **[Frontend README](../Dogechain\ Bubblemaps/README.md)** - Main project documentation
+
+**External Resources:**
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Neon Documentation](https://neon.tech/docs)
+- [Vercel Documentation](https://vercel.com/docs)
+
+---
+
 ## Support
 
-- Neon Docs: https://neon.tech/docs
-- Vercel Docs: https://vercel.com/docs
-- Main Project: `../dogechain-bubblemaps/`
+For issues or questions:
+- Check troubleshooting section above
+- Review Vercel function logs
+- Verify database connection
+- Check environment variables
 
-## License
+---
 
-MIT
+**Last Updated:** 2026-01-06
+
+**API Version:** 1.0.0
+
+**Base URL:** https://dogechain-bubblemaps-api.vercel.app
+
+**Framework:** Next.js 15 + TypeScript + Neon PostgreSQL
