@@ -29,7 +29,7 @@ let cache: {
   timestamp: number;
 } | null = null;
 
-const CACHE_TTL = 10000; // 10 seconds
+const CACHE_TTL = 5000; // 5 seconds - reduced for more frequent updates
 
 async function fetchNetworkStats(): Promise<NetworkStats> {
   try {
