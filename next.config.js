@@ -13,7 +13,7 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Origin',
-            value: 'https://www.dogechain-bubblemaps.xyz',
+            value: 'https://dogechain-bubblemaps.vercel.app',
           },
           {
             key: 'Access-Control-Allow-Methods',
