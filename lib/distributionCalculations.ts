@@ -7,7 +7,11 @@
  * - Distribution buckets for histogram visualization
  */
 
-import { Wallet } from "../types";
+export interface Wallet {
+  address: string;
+  balance?: number;
+  label?: string;
+}
 
 /**
  * Calculate the Gini coefficient for a set of wallet balances
@@ -111,13 +115,13 @@ export interface DistributionBucket {
 export function getDistributionBuckets(holders: Wallet[]): DistributionBucket[] {
   if (holders.length === 0) return [];
 
-  const sorted = [...holders].sort((a, b) => b.balance - a.balance);
-  const totalSupply = sorted.reduce((sum, w) => sum + w.balance, 0);
+  const sorted = [...holders].sort((a, b) => (b.balance ?? 0) - (a.balance ?? 0));
+  const totalSupply = sorted.reduce((sum, w) => sum + (w.balance ?? 0), 0);
 
   if (totalSupply === 0) return [];
 
   // Convert to percentages
-  const percentages = sorted.map((w) => (w.balance / totalSupply) * 100);
+  const percentages = sorted.map((w) => ((w.balance ?? 0) / totalSupply) * 100);
 
   // Define bucket ranges (in percentage of total supply)
   const bucketRanges = [

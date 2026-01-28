@@ -44,11 +44,12 @@ const cache = {
 const CACHE_TTL = 300000; // 5 minutes
 
 export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const type = (searchParams.get('type') || 'tvl') as 'tvl' | 'new' | 'factory';
+  const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100);
+  const useCache = searchParams.get('cache') !== 'false';
+
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const type = (searchParams.get('type') || 'tvl') as 'tvl' | 'new' | 'factory';
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20', 10), 100);
-    const useCache = searchParams.get('cache') !== 'false';
 
     // Check cache
     const cacheKey = type;
