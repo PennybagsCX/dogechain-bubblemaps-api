@@ -78,7 +78,9 @@ export async function GET(request: NextRequest) {
         SELECT
           pool_address,
           token0_address,
+          token0_symbol,
           token1_address,
+          token1_symbol,
           factory_name,
           reserve0,
           reserve1,
@@ -143,7 +145,9 @@ export async function GET(request: NextRequest) {
         SELECT
           pool_address,
           token0_address,
+          token0_symbol,
           token1_address,
+          token1_symbol,
           factory_name,
           reserve0,
           reserve1,

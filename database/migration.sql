@@ -65,6 +65,44 @@ $$ LANGUAGE plpgsql;
 COMMENT ON FUNCTION cleanup_old_search_events IS
 'Deletes search events older than 90 days to prevent database bloat';
 
+-- Create dex_pools table for DEX liquidity pool analytics
+-- Stores pool data including reserves, TVL, and metadata
+CREATE TABLE IF NOT EXISTS dex_pools (
+  id SERIAL PRIMARY KEY,
+  pool_address VARCHAR(42) NOT NULL UNIQUE,
+  token0_address VARCHAR(42) NOT NULL,
+  token0_symbol VARCHAR(50),
+  token1_address VARCHAR(42) NOT NULL,
+  token1_symbol VARCHAR(50),
+  factory_name VARCHAR(100) NOT NULL,
+  reserve0 NUMERIC(78, 0) DEFAULT 0,
+  reserve1 NUMERIC(78, 0) DEFAULT 0,
+  tvl_usd NUMERIC(38, 18) DEFAULT 0,
+  lp_token_supply NUMERIC(78, 0) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Create indexes for dex_pools table
+CREATE INDEX IF NOT EXISTS idx_dex_pools_pool_address ON dex_pools(pool_address);
+CREATE INDEX IF NOT EXISTS idx_dex_pools_factory_name ON dex_pools(factory_name);
+CREATE INDEX IF NOT EXISTS idx_dex_pools_tvl_usd ON dex_pools(tvl_usd DESC);
+CREATE INDEX IF NOT EXISTS idx_dex_pools_created_at ON dex_pools(created_at DESC);
+
+-- Create trigger to update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_dex_pools_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_update_dex_pools_updated_at
+  BEFORE UPDATE ON dex_pools
+  FOR EACH ROW
+  EXECUTE FUNCTION update_dex_pools_updated_at();
+
 -- Verify the setup
 SELECT
   'search_events table' as object_name,
@@ -74,4 +112,9 @@ UNION ALL
 SELECT
   'trending_assets_view view',
   COUNT(*)
-FROM trending_assets_view;
+FROM trending_assets_view
+UNION ALL
+SELECT
+  'dex_pools table',
+  COUNT(*)
+FROM dex_pools;
