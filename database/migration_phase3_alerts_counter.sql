@@ -14,12 +14,22 @@ CREATE TABLE IF NOT EXISTS triggered_alerts (
   token_address VARCHAR(42),
   token_symbol VARCHAR(50),
   transaction_count INTEGER DEFAULT 0,
-  triggered_at TIMESTAMPTZ DEFAULT NOW(),
-
-  -- Unique constraint to prevent duplicate alert logging
-  -- Same alert for same wallet/token within 1 minute is considered a duplicate
-  CONSTRAINT unique_alert_trigger UNIQUE (alert_id, wallet_address, token_address, triggered_at)
+  triggered_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Add unique constraint separately (in case table already exists)
+-- This prevents duplicate alert logging
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conname = 'unique_alert_trigger'
+  ) THEN
+    ALTER TABLE triggered_alerts
+    ADD CONSTRAINT unique_alert_trigger
+    UNIQUE (alert_id, wallet_address, token_address, triggered_at);
+  END IF;
+END $$;
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_triggered_alerts_alert_id ON triggered_alerts(alert_id);
