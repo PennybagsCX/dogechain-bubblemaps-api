@@ -26,7 +26,7 @@ let cache: {
   timestamp: number;
 } | null = null;
 
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL = 10 * 1000; // 10 seconds for near real-time counter updates
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300',
+          'Cache-Control': 'public, max-age=10, stale-while-revalidate=10',
         },
       });
     }
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300',
+        'Cache-Control': 'public, max-age=10, stale-while-revalidate=10',
       },
     });
   } catch (error) {

@@ -18,6 +18,7 @@ interface TriggerRequestBody {
   tokenAddress?: string;
   tokenSymbol?: string;
   transactionCount: number;
+  sessionId?: string;
 }
 
 interface TriggerResponse {
@@ -82,6 +83,7 @@ export async function POST(request: NextRequest) {
           token_address,
           token_symbol,
           transaction_count,
+          session_id,
           triggered_at
         )
         VALUES (
@@ -91,9 +93,10 @@ export async function POST(request: NextRequest) {
           ${body.tokenAddress?.toLowerCase() || null},
           ${body.tokenSymbol || null},
           ${body.transactionCount},
+          ${body.sessionId || null},
           NOW()
         )
-        ON CONFLICT (alert_id, wallet_address, token_address, triggered_at)
+        ON CONFLICT (alert_id, session_id, triggered_at)
         DO NOTHING
       `;
 
