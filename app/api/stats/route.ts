@@ -5,6 +5,9 @@
  * These counters display in the header and footer showing:
  * - Total Searches (aggregate count of all token/NFT searches)
  * - Total Alerts Fired (aggregate count of all triggered alert events)
+ *
+ * After migration_phase3_alerts_counter.sql, the alerts count is read
+ * from the alert_counters table for O(1) performance instead of COUNT(*).
  */
 
 import { neon } from '@neondatabase/serverless';
@@ -56,14 +59,25 @@ export async function GET(request: NextRequest) {
       WHERE interaction_type = 'search'
     `;
 
-    // Query total alerts from triggered_alerts table
-    const alertsResult = await sql`
-      SELECT COUNT(*) as count
-      FROM triggered_alerts
-    `;
+    // Query total alerts from alert_counters table (O(1) instead of COUNT(*))
+    // Fallback to COUNT(*) if counter table doesn't exist yet (migration safety)
+    let alerts = 0;
+    try {
+      const counterResult = await sql`
+        SELECT total_alerts FROM alert_counters WHERE id = 1
+      `;
+      alerts = parseInt(counterResult[0]?.total_alerts || '0', 10);
+    } catch (counterError) {
+      // Counter table doesn't exist yet (migration not run), fall back to COUNT(*)
+      console.warn('[Stats API] Counter table not found, falling back to COUNT(*)');
+      const alertsResult = await sql`
+        SELECT COUNT(*) as count
+        FROM triggered_alerts
+      `;
+      alerts = parseInt(alertsResult[0]?.count || '0', 10);
+    }
 
     const searches = parseInt(searchesResult[0]?.count || '0', 10);
-    const alerts = parseInt(alertsResult[0]?.count || '0', 10);
 
     // Update cache
     cache = {

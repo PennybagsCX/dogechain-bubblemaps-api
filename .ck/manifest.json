@@ -1,0 +1,226 @@
+{
+  "version": "0.1.0",
+  "created": 1769694558,
+  "updated": 1769694567,
+  "files": {
+    "./app/api/dex-analytics/route.ts": {
+      "path": "./app/api/dex-analytics/route.ts",
+      "hash": "a5a99bcb0b63f76320433a5cf84ef2f9f266af3dabcab5db70c8c37c9b7e0748",
+      "last_modified": 1769693813,
+      "size": 7160
+    },
+    "./app/api/alerts/route.ts": {
+      "path": "./app/api/alerts/route.ts",
+      "hash": "c086b782d51338dff73028802e193091f6a6a36ebfc998a2de9756b27a984ffa",
+      "last_modified": 1769654057,
+      "size": 2992
+    },
+    "./app/api/interactions/route.ts": {
+      "path": "./app/api/interactions/route.ts",
+      "hash": "f21432e0e50927e59f2691dee44b0664ebc2f23d7336b3561b41efefa84f31ec",
+      "last_modified": 1769654342,
+      "size": 3647
+    },
+    "./app/api/network-health/route.ts": {
+      "path": "./app/api/network-health/route.ts",
+      "hash": "e0be8eb1d15ba99db6ac4c9c6233f0bdfc6e7bf0301e9d307cdb7365045543b3",
+      "last_modified": 1769629228,
+      "size": 4331
+    },
+    "./next.config.js": {
+      "path": "./next.config.js",
+      "hash": "27af8aec8a0375b56b95a1c401126cbc8a2902438981e794ef0562a911c6f2d9",
+      "last_modified": 1769627432,
+      "size": 886
+    },
+    "./app/api/recommendations/peers/route.ts": {
+      "path": "./app/api/recommendations/peers/route.ts",
+      "hash": "998b14ff9f1180efbb297e7056ebb734d1287c9c825c92baec2da5cf9357d2f2",
+      "last_modified": 1767717992,
+      "size": 3345
+    },
+    "./app/api/trending/log/route.ts": {
+      "path": "./app/api/trending/log/route.ts",
+      "hash": "4b596c3fbc2bb177ac1b49064624751867f4e75b98b11f36fe43264701e0584a",
+      "last_modified": 1767728324,
+      "size": 2601
+    },
+    "./DEPLOYMENT.md": {
+      "path": "./DEPLOYMENT.md",
+      "hash": "a75f47bbea8ae8dc33a9456f6bc07f4d5dc796c3f37c9c73e8be4908c48d9c13",
+      "last_modified": 1767717086,
+      "size": 3960
+    },
+    "./app/api/health/route.ts": {
+      "path": "./app/api/health/route.ts",
+      "hash": "1c943d7e37dc75f2782ddef25cceae65edde6d24099d01b1bdde4b5671eb2fc8",
+      "last_modified": 1767717878,
+      "size": 884
+    },
+    "./database/migration.sql": {
+      "path": "./database/migration.sql",
+      "hash": "d18e222a502217171b164a02b140cd876597b55051feb159fcf8f172d96346e9",
+      "last_modified": 1769691763,
+      "size": 4049
+    },
+    "./app/api/dex-analytics/sync/route.ts": {
+      "path": "./app/api/dex-analytics/sync/route.ts",
+      "hash": "853954191bdff19f629ee80be83118798cbc1ab0c8372ceb6c8d7a34e43cd1f8",
+      "last_modified": 1769691826,
+      "size": 10287
+    },
+    "./app/api/learned-tokens/route.ts": {
+      "path": "./app/api/learned-tokens/route.ts",
+      "hash": "6e4fafec874cb4cfd703a4e8c95664f7e5978acfe046ba0efd213e2b755f5fac",
+      "last_modified": 1767888053,
+      "size": 5466
+    },
+    "./app/api/analytics/click/route.ts": {
+      "path": "./app/api/analytics/click/route.ts",
+      "hash": "20e77c62fcabc7397ed5f04498cd5aef054f4e1f948575bf90c8d32426bb1898",
+      "last_modified": 1767717986,
+      "size": 2572
+    },
+    "./app/api/distribution/route.ts": {
+      "path": "./app/api/distribution/route.ts",
+      "hash": "2c22aa0269af69b3d3a758aa94415d29ca690f757577756be2237db853006f99",
+      "last_modified": 1769623668,
+      "size": 7290
+    },
+    "./app/api/trending/popularity/route.ts": {
+      "path": "./app/api/trending/popularity/route.ts",
+      "hash": "c2c956670788b7b9fec0385661eeada5a547e6fe715be59bb6b22041819f3753",
+      "last_modified": 1767717989,
+      "size": 4499
+    },
+    "./package-lock.json": {
+      "path": "./package-lock.json",
+      "hash": "4d2431e9f0e3de0baa40dc8d3f7d5879687bdf165f0d5fa2e0c14430f04bf93c",
+      "last_modified": 1767728159,
+      "size": 36962
+    },
+    "./lib/distributionCalculations.ts": {
+      "path": "./lib/distributionCalculations.ts",
+      "hash": "3a277511fbbe7ea7ed62abc7887dfde3b49169c517d3b57b5733dce47a086e3c",
+      "last_modified": 1769623932,
+      "size": 5494
+    },
+    "./scripts/check-trending-data.js": {
+      "path": "./scripts/check-trending-data.js",
+      "hash": "ee4915676cb9df16e40c9a83180650e80e885eb366ea396a994e2f1d277b6b8c",
+      "last_modified": 1767728280,
+      "size": 879
+    },
+    "./app/api/stats/route.ts": {
+      "path": "./app/api/stats/route.ts",
+      "hash": "620296cf36f18394c0167f471dc58adb7101f734fb9104b2f5b5c4fa6b53bf38",
+      "last_modified": 1769627158,
+      "size": 2754
+    },
+    "./app/api/alerts/trigger/route.ts": {
+      "path": "./app/api/alerts/trigger/route.ts",
+      "hash": "4d29ef6e7781a4b6cd1516c7014fc3f3da8f7e793f4a5e37073bc1e9b5578bd3",
+      "last_modified": 1769654065,
+      "size": 2721
+    },
+    "./scripts/inspect-db.js": {
+      "path": "./scripts/inspect-db.js",
+      "hash": "24daa563830c5124340ab09be2cb325b2a3bd92dd7939e1e629a42504bd5c66d",
+      "last_modified": 1767728206,
+      "size": 2126
+    },
+    "./scripts/check-constraints.js": {
+      "path": "./scripts/check-constraints.js",
+      "hash": "258579cddb7165bf2ab6c24f02010ce06935296950dba0b0743efd350bff1628",
+      "last_modified": 1767728332,
+      "size": 981
+    },
+    "./package.json": {
+      "path": "./package.json",
+      "hash": "ffb866b12fe7757c8de19a0797500080c49b68363957f59e0d4ae630fe7afa91",
+      "last_modified": 1767728159,
+      "size": 576
+    },
+    "./README.md": {
+      "path": "./README.md",
+      "hash": "7fafd3de9151891ed38149eb9bee8588ef48393dea2a4138f5497bb5800a665a",
+      "last_modified": 1767732016,
+      "size": 15168
+    },
+    "./vercel.json": {
+      "path": "./vercel.json",
+      "hash": "8091a3ccd3c46a0775d944ef728cc83fb49da1bca404c8edd8e2983434531185",
+      "last_modified": 1767718182,
+      "size": 93
+    },
+    "./SETUP-COMPLETE.md": {
+      "path": "./SETUP-COMPLETE.md",
+      "hash": "15fb9efceafd3cbf603030749e24a8dd56dac5b649b2bb7ef470b7211fb8a83b",
+      "last_modified": 1767718306,
+      "size": 8560
+    },
+    "./scripts/check-db.js": {
+      "path": "./scripts/check-db.js",
+      "hash": "505d4ae5aeed12d4696999ce76fdfda788618f586e1933f6f7fdb8e9289d6d32",
+      "last_modified": 1767728155,
+      "size": 4579
+    },
+    "./app/api/trending-wallet/route.ts": {
+      "path": "./app/api/trending-wallet/route.ts",
+      "hash": "bf0efaa77dc5c4cc581e65884c5c66151d4f64d6e3b9f7b6c3e70cb5847691a8",
+      "last_modified": 1767888073,
+      "size": 1651
+    },
+    "./tsconfig.json": {
+      "path": "./tsconfig.json",
+      "hash": "71399e8fef945bf89d0620db5d27f34ded2126285c1ee20b4a825b18fc1d7380",
+      "last_modified": 1767717822,
+      "size": 626
+    },
+    "./SETUP_COMPLETE.md": {
+      "path": "./SETUP_COMPLETE.md",
+      "hash": "b76193cd3ecb11eac30d4562e090106449f3bacdcb7a1c0071bc1b3fc57d06fb",
+      "last_modified": 1767728514,
+      "size": 5845
+    },
+    "./app/api/wallet-scan/route.ts": {
+      "path": "./app/api/wallet-scan/route.ts",
+      "hash": "cac5beb3342af36fa3a7f8df822291e1d8f03b69c0ac1cfa86a82359191775f0",
+      "last_modified": 1767888061,
+      "size": 3979
+    },
+    "./scripts/check-test-token.js": {
+      "path": "./scripts/check-test-token.js",
+      "hash": "9fa2cee1703afef221f9a99b63635404ab490e2d6089c3d69c4c93438bbf9209",
+      "last_modified": 1767728479,
+      "size": 686
+    },
+    "./scripts/setup-trending-db.js": {
+      "path": "./scripts/setup-trending-db.js",
+      "hash": "62a786e9c93ac7dbc33623cb30146d82d723f1d8150e004f9f6fe2e6de1bef0b",
+      "last_modified": 1767728254,
+      "size": 5450
+    },
+    "./app/api/trending/route.ts": {
+      "path": "./app/api/trending/route.ts",
+      "hash": "05a7305ceaaacc5ecce5250b1cf36a9bcaf5f046c48841990ccc673756d4bf56",
+      "last_modified": 1767728314,
+      "size": 3801
+    },
+    "./app/api/analytics/search/route.ts": {
+      "path": "./app/api/analytics/search/route.ts",
+      "hash": "c2d0c763dd5d1cf953766d7dabb14a45225d6b8f6501ad2b3d0d4ad6bd78247b",
+      "last_modified": 1767717983,
+      "size": 2512
+    },
+    "./app/api/dogechain-proxy/route.ts": {
+      "path": "./app/api/dogechain-proxy/route.ts",
+      "hash": "298d717e78546ce5781713ce52c89b490e26d229031ab4926c8d266bbaed7ccf",
+      "last_modified": 1767727409,
+      "size": 2537
+    }
+  },
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "embedding_dimensions": 384,
+  "chunk_hash_version": 2
+}
