@@ -21,3 +21,4 @@ dist/
 # Local env files
 .env*.local
 .env.production
+.vercel
