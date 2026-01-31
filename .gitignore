@@ -15,6 +15,9 @@ dist/
 # Production
 .vercel/
 
+# Claude Code context symlinks (break Vercel builds)
+.context
+
 # Debug
 *.log
 
